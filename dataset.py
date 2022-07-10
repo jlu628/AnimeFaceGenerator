@@ -32,11 +32,23 @@ class LoadDataset(Dataset):
 
 
 if __name__ == "__main__":
-    dir = 'data/'
-    ds = LoadDataset(dir, 0.5, 0.5)
-    print(len(ds))
-    loader = DataLoader(ds, batch_size=32, shuffle=True)
-    for batch in loader:
-        print(batch.shape)
-        save_image(batch, 'sample.jpg')
-        break
+    ds = LoadDataset('data/train', 0.5, 0.5)
+    loader = DataLoader(ds, batch_size=32, shuffle=True, num_workers=2)
+    num_batches = len(ds)/32
+
+    val_ds = LoadDataset('data/val', 0.5, 0.5)
+    val_loader = DataLoader(val_ds, batch_size=32, shuffle=True, num_workers=2)
+
+    dl = {
+        "ds": ds,
+        "loader": loader,
+        "val_ds": val_ds,
+        "val_loader": val_loader
+    }
+    import pickle
+    with open('DataLoader.p', 'wb') as fh:
+        pickle.dump(dl, fh)
+    # for batch in loader:
+    #     print(batch.shape)
+    #     save_image(batch, 'sample.jpg')
+    #     break
