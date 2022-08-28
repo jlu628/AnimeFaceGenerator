@@ -3,6 +3,7 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 from torchvision.utils import save_image
 from torchvision import transforms
+import random
 
 class LoadDataset(Dataset):
     def __init__(self, dir, mean=0.5, std=0.5, length=None):
@@ -18,6 +19,7 @@ class LoadDataset(Dataset):
                 if '.jpg' in file:
                     self.list_files.append(os.path.join(root, file))
         if length:
+            random.shuffle(self.list_files)
             self.list_files = self.list_files[:length]
 
 

@@ -1,6 +1,6 @@
 import torch
 
-def train_discriminator(G, D, images, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cpu'):
+def train_discriminator(G, D, images, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cuda'):
     optimizer.zero_grad()
 
     real_labels = (torch.ones(batch_size, 1)-0.1).to(device)
@@ -21,7 +21,7 @@ def train_discriminator(G, D, images, loss_fn, optimizer, latent_size=(128,1,1),
     return d_loss.item()
 
 
-def train_generator(G, D, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cpu'):
+def train_generator(G, D, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cuda'):
     optimizer.zero_grad()
 
     real_labels = torch.ones(batch_size, 1).to(device)
@@ -37,7 +37,7 @@ def train_generator(G, D, loss_fn, optimizer, latent_size=(128,1,1), batch_size=
     return g_loss.item()
 
 
-def evaluate(G, D, loss_fn, val_loader, latent_size=(128,1,1), batch_size=64,  device='cpu',):
+def evaluate(G, D, loss_fn, val_loader, latent_size=(128,1,1), batch_size=64,  device='cuda',):
     for batch_images in val_loader:
         with torch.no_grad():
             batch_images.to(device)

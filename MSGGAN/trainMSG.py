@@ -1,13 +1,13 @@
 import torch
 
-def train_discriminator(G, D, downsampler, images, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cpu'):
+def train_discriminator(G, D, downsampler, images, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cuda'):
     optimizer.zero_grad()
 
     real_labels = (torch.ones(batch_size, 1)-0.1).to(device)
     fake_labels = torch.zeros(batch_size, 1).to(device)
 
     downsampled_real = downsampler(images)
-    real_preds = D(add_noise(downsampled_real))
+    real_preds = D(add_noise(downsampled_real, device=device))
     real_loss = loss_fn(real_preds, real_labels)
     
     latent = torch.randn(batch_size, *latent_size).to(device)
@@ -22,7 +22,7 @@ def train_discriminator(G, D, downsampler, images, loss_fn, optimizer, latent_si
     return d_loss.item()
 
 
-def train_generator(G, D, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64,  device='cpu'):
+def train_generator(G, D, loss_fn, optimizer, latent_size=(128,1,1), batch_size=64, device='cuda'):
     optimizer.zero_grad()
 
     real_labels = torch.ones(batch_size, 1).to(device)
@@ -38,15 +38,15 @@ def train_generator(G, D, loss_fn, optimizer, latent_size=(128,1,1), batch_size=
     return g_loss.item()
 
 
-def evaluate(G, D, downsampler, loss_fn, val_loader, latent_size=(128,1,1), batch_size=64,  device='cpu',):
+def evaluate(G, D, downsampler, loss_fn, val_loader, latent_size=(128,1,1), batch_size=64, device='cuda',):
     for batch_images in val_loader:
         with torch.no_grad():
-            batch_images.to(device)
+            batch_images = batch_images.to(device)
             real_labels = torch.ones(batch_size, 1).to(device)
             fake_labels = torch.zeros(batch_size, 1).to(device)
 
             downsampled_real = downsampler(batch_images)
-            real_preds = D(add_noise(downsampled_real))
+            real_preds = D(add_noise(downsampled_real, device=device))
             real_loss = loss_fn(real_preds, real_labels)
 
             latent = torch.randn(batch_size, *latent_size).to(device)
